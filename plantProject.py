@@ -13,7 +13,7 @@ import numpy as np
 #html_text = requests.get(url).text
 #p = soup(html_text.content, 'html.parser')
 
-with open("USDA Plants Database.html", encoding="utf8") as usdaFile:
+with open("USDA Plants Database.htm", encoding="utf8") as usdaFile:
         usdaSoup = soup(usdaFile, 'html.parser')
 
 usda = usdaSoup.pre.get_text().split('\n')
