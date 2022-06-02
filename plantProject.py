@@ -1,21 +1,41 @@
-# -*- coding: utf-8 -*-
 """
-plants
+Analyzing USDA plant Data
 """
+
 from bs4 import BeautifulSoup as soup
-#import requests
 import re
 import pandas as pd
 import numpy as np
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import time
 
 # web scraping 
-#url='https://plants.sc.egov.usda.gov/csvdownload?plantLst=plantCompleteList'
-#html_text = requests.get(url).text
-#p = soup(html_text.content, 'html.parser')
+def create_browser():
+    """
+    chrome selenium object that mimics a browser
+    """
+    chrome_options = Options()
+    # creates an invisible browser
+    chrome_options.add_argument("--headless")
+    browser = webdriver.Chrome(options=chrome_options)
+    print("Created Chrome Browser")
+    return browser
 
-with open("USDA Plants Database.htm", encoding="utf8") as usdaFile:
-        usdaSoup = soup(usdaFile, 'html.parser')
+url='https://plants.sc.egov.usda.gov/csvdownload?plantLst=plantCompleteList'
+browser = create_browser() 
+browser.get(url)
+# wait 15 seconds for real page to load
+time.sleep(15) 
+page_html = browser.page_source
+browser.quit()
 
+# extracting data from downloaded html (alt to web scraping)
+#with open("USDA Plants Database.htm", encoding="utf8") as usdaFile:
+#        usdaSoup = soup(usdaFile, 'html.parser')
+
+# parse html
+usdaSoup = soup(page_html, 'html.parser')
 usda = usdaSoup.pre.get_text().split('\n')
 
 # splitting individual entry data
@@ -25,10 +45,10 @@ for i in range(len(usda)):
         usda[i][j] = usda[i][j].replace('"','')
 
 
-## creating dataframe and cleaning up data
+# creating dataframe and cleaning up data
 df = pd.DataFrame(data=usda[1:])
 
-# entry 92926 has 6 columns from incorrect data entry, drop empty column
+# entry 92926 has 6 columns from incorrect data entry
 df = df.drop(columns=5)
 
 # add variable names
