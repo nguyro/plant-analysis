@@ -19,18 +19,20 @@ def create_browser():
     # creates an invisible browser
     chrome_options.add_argument("--headless")
     browser = webdriver.Chrome(options=chrome_options)
-    print("Created Chrome Browser")
+    print("Created Chrome Browser\n")
     return browser
 
-url='https://plants.sc.egov.usda.gov/csvdownload?plantLst=plantCompleteList'
+url = 'https://plants.sc.egov.usda.gov/csvdownload?plantLst=plantCompleteList'
 browser = create_browser() 
 browser.get(url)
+print("Grabbing Data...\n")
 # wait 15 seconds for real page to load
 time.sleep(15) 
 page_html = browser.page_source
 browser.quit()
+print("Closed Chrome Browser\n")
 
-# extracting data from downloaded html (alt to web scraping)
+# extracting data from downloaded html file (alt to web scraping)
 #with open("USDA Plants Database.htm", encoding="utf8") as usdaFile:
 #        usdaSoup = soup(usdaFile, 'html.parser')
 
@@ -68,3 +70,7 @@ df['Common Name'] = df['Common Name'].apply(lambda x: x.title())
 
 # replacing blanks with nan
 df.replace('', np.nan, regex=True, inplace = True)
+
+# print first 5 rows
+print("Preview of Data:")
+print(df.head(5))
